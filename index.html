@@ -58,7 +58,7 @@
 
                 <div id="final-area" class="mt-10 hidden border-t border-white/5 pt-8">
                     <button onclick="submitToDiscord()" id="submit-btn" class="btn-send w-full py-6 rounded-2xl text-2xl shadow-xl active:scale-95 transition-all">
-                        確認購買 (同步至 Discord)
+                        發送表單
                     </button>
                     <p id="status-msg" class="text-center mt-4 font-bold text-sm tracking-widest"></p>
                 </div>
@@ -160,11 +160,11 @@
             }
 
             btn.disabled = true;
-            status.innerText = "⚡ 正在同步訂單...";
+            status.innerText = "⚡ 正在發送訂單...";
 
             const orderContent = Object.keys(cart).map(k => `> 📦 **物資 ${k}** | 數量：\`${cart[k]}\``).join('\n');
             const payload = {
-                username: "RYFN 商城交易機器人",
+                username: "RYFN 商城訂單機器人",
                 embeds: [{
                     title: "🔥 新訂單抵達",
                     color: 16753920,
@@ -173,7 +173,7 @@
                         { name: "📧 聯絡 Gmail", value: `\`${userGmail}\``, inline: true },
                         { name: "📋 訂購內容", value: orderContent }
                     ],
-                    footer: { text: "RYFN 安全系統：已過濾重複與格式錯誤" },
+                    footer: { text: "訂單同步" },
                     timestamp: new Date()
                 }]
             };
