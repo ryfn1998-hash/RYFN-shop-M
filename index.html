@@ -3,155 +3,217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>無規則伺服器 - 官方商城</title>
+    <title>你想要的我都有RYFN商城</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #121212; color: #e0e0e0; }
-        .card { background-color: #1e1e1e; border: 1px solid #333; }
+        body { background: #0a0a0c; color: #f8fafc; font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(20, 20, 25, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); }
+        .shop-gradient { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .btn-send { background: linear-gradient(90deg, #f59e0b, #ea580c); color: #000; font-weight: 900; }
+        .btn-send:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3); }
+        select, input { background: #18181b !important; color: white !important; border: 1px solid #3f3f46 !important; }
+        select:focus, input:focus { border-color: #f59e0b !important; outline: none; }
     </style>
 </head>
-<body class="p-5">
-    <div class="max-w-md mx-auto card rounded-lg shadow-xl p-6">
-        <h1 class="text-2xl font-bold mb-6 text-center text-yellow-500">官方物資訂購單</h1>
-        
-        <div class="mb-6">
-            <label class="block mb-2 text-sm font-medium">聯絡資訊 (Gmail 或 Discord 帳號) <span class="text-red-500">*</span></label>
-            <input type="text" id="contact" required placeholder="例如: user#1234 或 abc@gmail.com" 
-                class="w-full p-2.5 rounded bg-gray-800 border border-gray-700 focus:ring-blue-500 focus:border-blue-500 text-white">
+<body class="min-h-screen flex flex-col items-center p-6 md:p-12 w-full">
+
+    <div class="w-full max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-5xl md:text-7xl font-black shop-gradient mb-4 italic uppercase tracking-tighter">你想要的我都有RYFN商城</h1>
+            <div class="h-1.5 w-32 bg-amber-500 mx-auto rounded-full shadow-[0_0_15px_rgba(245,158,11,0.5)]"></div>
+        </header>
+
+        <div class="space-y-8">
+            <div class="glass p-8 rounded-[2rem] shadow-2xl">
+                <h2 class="text-amber-500 font-black text-xl mb-6 flex items-center uppercase italic">
+                    <span class="mr-2 italic text-2xl">01.</span> Contact Info / 聯絡資訊
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-[10px] text-gray-500 font-bold ml-1 tracking-widest">DISCORD NAME</label>
+                        <input type="text" id="discord_user" placeholder="例如: user#0000" 
+                            class="w-full p-4 rounded-xl transition-all">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] text-gray-500 font-bold ml-1 tracking-widest">GMAIL ADDRESS</label>
+                        <input type="email" id="user_gmail" placeholder="例如: ryfn@gmail.com" 
+                            class="w-full p-4 rounded-xl transition-all">
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass p-8 rounded-[2rem] shadow-2xl">
+                <h2 class="text-amber-500 font-black text-xl mb-6 flex items-center uppercase italic">
+                    <span class="mr-2 italic text-2xl">02.</span> Select Items / 挑選物資
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-[10px] text-gray-500 font-bold ml-1">系列一 (1-1 ~ 1-20)</label>
+                        <select id="sel-1" class="w-full p-4 rounded-xl transition-all"></select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] text-gray-500 font-bold ml-1">系列二 (2-1 ~ 2-20)</label>
+                        <select id="sel-2" class="w-full p-4 rounded-xl transition-all"></select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] text-gray-500 font-bold ml-1">系列三 (3-1 ~ 3-20)</label>
+                        <select id="sel-3" class="w-full p-4 rounded-xl transition-all"></select>
+                    </div>
+                </div>
+                <button onclick="addToCart()" class="w-full mt-6 p-4 bg-white/5 hover:bg-white/10 rounded-2xl font-black border border-white/5 transition-all text-amber-500 uppercase tracking-widest">
+                    Add to List / 加入購物清單 +
+                </button>
+            </div>
+
+            <div class="glass p-8 rounded-[2rem] border border-amber-500/20 shadow-[0_0_50px_rgba(245,158,11,0.05)]">
+                <h2 class="text-amber-500 font-black text-xl mb-6 flex items-center uppercase italic">
+                    <span class="mr-2 italic text-2xl">03.</span> Final Cart / 您的訂單
+                </h2>
+                <div id="cart-container" class="space-y-4">
+                    <div class="text-center py-10 text-gray-600 italic">尚未選擇任何物資...</div>
+                </div>
+
+                <div id="final-area" class="mt-10 hidden border-t border-white/5 pt-8">
+                    <button onclick="submitToDiscord()" id="submit-btn" class="btn-send w-full py-6 rounded-2xl text-2xl shadow-xl active:scale-95 transition-all uppercase tracking-tighter">
+                        Confirm & Sync / 確認並同步到 DISCORD
+                    </button>
+                    <p id="status-msg" class="text-center mt-4 font-bold text-sm tracking-widest"></p>
+                </div>
+            </div>
         </div>
 
-        <div class="space-y-4 mb-6" id="product-list">
-            <div class="flex items-center justify-between p-3 bg-gray-800 rounded">
-                <div>
-                    <span class="font-semibold text-white">32K 神劍套裝</span>
-                </div>
-                <div class="flex items-center space-x-3">
-                    <button onclick="changeQty('item1', -1)" class="bg-red-600 px-2 py-1 rounded text-white font-bold">-</button>
-                    <span id="item1-qty" class="w-8 text-center font-mono">0</span>
-                    <button onclick="changeQty('item1', 1)" class="bg-green-600 px-2 py-1 rounded text-white font-bold">+</button>
-                </div>
-            </div>
-
-            <div class="flex items-center justify-between p-3 bg-gray-800 rounded">
-                <div>
-                    <span class="font-semibold text-white">滿載潛影盒 (黑曜石)</span>
-                </div>
-                <div class="flex items-center space-x-3">
-                    <button onclick="changeQty('item2', -1)" class="bg-red-600 px-2 py-1 rounded text-white font-bold">-</button>
-                    <span id="item2-qty" class="w-8 text-center font-mono">0</span>
-                    <button onclick="changeQty('item2', 1)" class="bg-green-600 px-2 py-1 rounded text-white font-bold">+</button>
-                </div>
-            </div>
-
-            <div class="flex items-center justify-between p-3 bg-gray-800 rounded">
-                <div>
-                    <span class="font-semibold text-white">終界水晶組合包</span>
-                </div>
-                <div class="flex items-center space-x-3">
-                    <button onclick="changeQty('item3', -1)" class="bg-red-600 px-2 py-1 rounded text-white font-bold">-</button>
-                    <span id="item3-qty" class="w-8 text-center font-mono">0</span>
-                    <button onclick="changeQty('item3', 1)" class="bg-green-600 px-2 py-1 rounded text-white font-bold">+</button>
-                </div>
-            </div>
-        </div>
-
-        <button onclick="sendOrder()" id="submit-btn"
-            class="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-4 rounded transition duration-200">
-            確認並發送訂單
-        </button>
-        
-        <p id="status" class="mt-4 text-center text-sm"></p>
+        <footer class="mt-20 text-center">
+            <p class="text-gray-700 text-[10px] tracking-[0.4em] font-black uppercase">© RYFN STORE - Official Anarchy System</p>
+        </footer>
     </div>
 
     <script>
-        // 儲存商品資訊
-        const items = {
-            item1: { name: "32K 神劍套裝", qty: 0 },
-            item2: { name: "滿載潛影盒 (黑曜石)", qty: 0 },
-            item3: { name: "終界水晶組合包", qty: 0 }
-        };
+        const WEBHOOK_URL = 'https://discord.com/api/webhooks/1474069127592411207/ltyixkgYynRNAKVUvlOckguj-DQGTRCvfYyeu8A82JGrGtuStB92T9FYyiznZLj7ypZX';
+        let cart = {};
 
-        // 調整數量函數
-        function changeQty(id, delta) {
-            const newQty = items[id].qty + delta;
-            if (newQty >= 0) {
-                items[id].qty = newQty;
-                document.getElementById(id + '-qty').innerText = newQty;
+        // 初始化選單
+        function initShop() {
+            for (let i = 1; i <= 3; i++) {
+                const sel = document.getElementById(`sel-${i}`);
+                sel.innerHTML = `<option value="">-- 請選擇 --</option>`;
+                for (let j = 1; j <= 20; j++) {
+                    sel.innerHTML += `<option value="${i}-${j}">物資 ${i}-${j}</option>`;
+                }
             }
         }
 
-        // 發送訂單到 Discord Webhook
-        async function sendOrder() {
-            const contactInfo = document.getElementById('contact').value;
-            const statusText = document.getElementById('status');
-            const submitBtn = document.getElementById('submit-btn');
-
-            if (!contactInfo) {
-                alert("請填寫聯絡資訊！");
-                return;
-            }
-
-            // 整理購買清單
-            let orderSummary = "";
-            let hasItems = false;
-            for (const key in items) {
-                if (items[key].qty > 0) {
-                    orderSummary += `- ${items[key].name}: **${items[key].qty}** 個\n`;
-                    hasItems = true;
+        // 加入清單
+        function addToCart() {
+            let found = false;
+            ['sel-1', 'sel-2', 'sel-3'].forEach(id => {
+                const val = document.getElementById(id).value;
+                if (val) {
+                    cart[val] = (cart[val] || 0) + 1;
+                    document.getElementById(id).value = "";
+                    found = true;
                 }
-            }
+            });
+            if (found) renderCart();
+        }
 
-            if (!hasItems) {
-                alert("請至少選擇一項商品！");
+        // 渲染購物車
+        function renderCart() {
+            const container = document.getElementById('cart-container');
+            const finalArea = document.getElementById('final-area');
+            const keys = Object.keys(cart);
+            
+            if (keys.length === 0) {
+                container.innerHTML = '<div class="text-center py-10 text-gray-600 italic">尚未選擇任何物資...</div>';
+                finalArea.classList.add('hidden');
                 return;
             }
 
-            // Webhook 資料
-            const webhookUrl = "https://discord.com/api/webhooks/1474069127592411207/ltyixkgYynRNAKVUvlOckguj-DQGTRCvfYyeu8A82JGrGtuStB92T9FYyiznZLj7ypZX";
+            finalArea.classList.remove('hidden');
+            container.innerHTML = '';
+            keys.forEach(key => {
+                const item = document.createElement('div');
+                item.className = "flex items-center justify-between bg-black/40 p-5 rounded-2xl border border-white/5 shadow-inner";
+                item.innerHTML = `
+                    <span class="text-xl font-bold text-amber-500">${key}</span>
+                    <div class="flex items-center space-x-6">
+                        <div class="flex items-center bg-zinc-900 rounded-xl overflow-hidden border border-zinc-700">
+                            <button onclick="updateQty('${key}', -1)" class="w-10 h-10 hover:bg-red-500/20 text-red-500 font-bold transition-all">-</button>
+                            <span class="w-12 text-center font-mono text-xl">${cart[key]}</span>
+                            <button onclick="updateQty('${key}', 1)" class="w-10 h-10 hover:bg-green-500/20 text-green-500 font-bold transition-all">+</button>
+                        </div>
+                        <button onclick="removeItem('${key}')" class="text-zinc-600 hover:text-white transition-all">✕</button>
+                    </div>`;
+                container.appendChild(item);
+            });
+        }
+
+        function updateQty(key, delta) {
+            cart[key] += delta;
+            if (cart[key] <= 0) delete cart[key];
+            renderCart();
+        }
+
+        function removeItem(key) {
+            delete cart[key];
+            renderCart();
+        }
+
+        // 發送至 Discord
+        async function submitToDiscord() {
+            const discordUser = document.getElementById('discord_user').value;
+            const userGmail = document.getElementById('user_gmail').value;
+            const btn = document.getElementById('submit-btn');
+            const status = document.getElementById('status-msg');
+            
+            if (!discordUser || !userGmail) {
+                alert("請填寫 Discord 名稱與 Gmail，管理員才能聯繫您！");
+                return;
+            }
+
+            btn.disabled = true;
+            status.className = "text-center mt-4 font-bold text-amber-500 animate-pulse";
+            status.innerText = "⚡ 正在發送加密訂單至 RYFN 頻道...";
+
+            const orderContent = Object.keys(cart).map(k => `> 📦 **物資 ${k}** | 數量：\`${cart[k]}\``).join('\n');
+
             const payload = {
-                username: "商城訂單助手",
+                username: "RYFN 商城交易機器人",
+                avatar_url: "https://i.imgur.com/your-logo.png", // 你可以換成自己的伺服器圖示
                 embeds: [{
-                    title: "🛒 新收到一筆商城訂單",
-                    color: 15844367, // 金色
+                    title: "🔥 新訂單抵達",
+                    color: 16753920,
                     fields: [
-                        { name: "👤 聯絡人資訊", value: contactInfo, inline: false },
-                        { name: "📦 購買清單", value: orderSummary, inline: false }
+                        { name: "👤 買家 Discord", value: `\`${discordUser}\``, inline: true },
+                        { name: "📧 聯絡 Gmail", value: `\`${userGmail}\``, inline: true },
+                        { name: "📋 訂購清單", value: orderContent }
                     ],
-                    footer: { text: "來自 GitHub 官方商城" },
+                    footer: { text: "RYFN OFFICIAL SYSTEM - 訂單自動同步" },
                     timestamp: new Date()
                 }]
             };
 
-            // 發送請求
-            submitBtn.disabled = true;
-            statusText.innerText = "發送中...";
-
             try {
-                const response = await fetch(webhookUrl, {
+                const res = await fetch(WEBHOOK_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-
-                if (response.ok) {
-                    statusText.className = "mt-4 text-center text-green-400";
-                    statusText.innerText = "訂單已成功發送！管理員將儘快聯繫您。";
-                    // 清空表單
-                    document.getElementById('contact').value = "";
-                    for (const key in items) {
-                        items[key].qty = 0;
-                        document.getElementById(key + '-qty').innerText = 0;
-                    }
-                } else {
-                    throw new Error();
-                }
-            } catch (error) {
-                statusText.className = "mt-4 text-center text-red-400";
-                statusText.innerText = "發送失敗，請稍後再試或直接聯繫管理員。";
-            } finally {
-                submitBtn.disabled = false;
+                if (res.ok) {
+                    status.className = "text-center mt-4 font-bold text-green-400";
+                    status.innerText = "✅ 訂單已發送！請在群組留意管理員訊息。";
+                    cart = {};
+                    document.getElementById('discord_user').value = "";
+                    document.getElementById('user_gmail').value = "";
+                    renderCart();
+                } else { throw new Error(); }
+            } catch (e) {
+                status.className = "text-center mt-4 font-bold text-red-500";
+                status.innerText = "❌ 發送失敗，請直接聯繫管理員。";
+                btn.disabled = false;
             }
         }
+
+        initShop();
     </script>
 </body>
 </html>
