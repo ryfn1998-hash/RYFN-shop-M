@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>無規則伺服器 - 官方商城</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #121212; color: #e0e0e0; }
+        .card { background-color: #1e1e1e; border: 1px solid #333; }
+    </style>
+</head>
+<body class="p-5">
+    <div class="max-w-md mx-auto card rounded-lg shadow-xl p-6">
+        <h1 class="text-2xl font-bold mb-6 text-center text-yellow-500">官方物資訂購單</h1>
+        
+        <div class="mb-6">
+            <label class="block mb-2 text-sm font-medium">聯絡資訊 (Gmail 或 Discord 帳號) <span class="text-red-500">*</span></label>
+            <input type="text" id="contact" required placeholder="例如: user#1234 或 abc@gmail.com" 
+                class="w-full p-2.5 rounded bg-gray-800 border border-gray-700 focus:ring-blue-500 focus:border-blue-500 text-white">
+        </div>
+
+        <div class="space-y-4 mb-6" id="product-list">
+            <div class="flex items-center justify-between p-3 bg-gray-800 rounded">
+                <div>
+                    <span class="font-semibold text-white">32K 神劍套裝</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button onclick="changeQty('item1', -1)" class="bg-red-600 px-2 py-1 rounded text-white font-bold">-</button>
+                    <span id="item1-qty" class="w-8 text-center font-mono">0</span>
+                    <button onclick="changeQty('item1', 1)" class="bg-green-600 px-2 py-1 rounded text-white font-bold">+</button>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between p-3 bg-gray-800 rounded">
+                <div>
+                    <span class="font-semibold text-white">滿載潛影盒 (黑曜石)</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button onclick="changeQty('item2', -1)" class="bg-red-600 px-2 py-1 rounded text-white font-bold">-</button>
+                    <span id="item2-qty" class="w-8 text-center font-mono">0</span>
+                    <button onclick="changeQty('item2', 1)" class="bg-green-600 px-2 py-1 rounded text-white font-bold">+</button>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between p-3 bg-gray-800 rounded">
+                <div>
+                    <span class="font-semibold text-white">終界水晶組合包</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button onclick="changeQty('item3', -1)" class="bg-red-600 px-2 py-1 rounded text-white font-bold">-</button>
+                    <span id="item3-qty" class="w-8 text-center font-mono">0</span>
+                    <button onclick="changeQty('item3', 1)" class="bg-green-600 px-2 py-1 rounded text-white font-bold">+</button>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="sendOrder()" id="submit-btn"
+            class="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-4 rounded transition duration-200">
+            確認並發送訂單
+        </button>
+        
+        <p id="status" class="mt-4 text-center text-sm"></p>
+    </div>
+
+    <script>
+        // 儲存商品資訊
+        const items = {
+            item1: { name: "32K 神劍套裝", qty: 0 },
+            item2: { name: "滿載潛影盒 (黑曜石)", qty: 0 },
+            item3: { name: "終界水晶組合包", qty: 0 }
+        };
+
+        // 調整數量函數
+        function changeQty(id, delta) {
+            const newQty = items[id].qty + delta;
+            if (newQty >= 0) {
+                items[id].qty = newQty;
+                document.getElementById(id + '-qty').innerText = newQty;
+            }
+        }
+
+        // 發送訂單到 Discord Webhook
+        async function sendOrder() {
+            const contactInfo = document.getElementById('contact').value;
+            const statusText = document.getElementById('status');
+            const submitBtn = document.getElementById('submit-btn');
+
+            if (!contactInfo) {
+                alert("請填寫聯絡資訊！");
+                return;
+            }
+
+            // 整理購買清單
+            let orderSummary = "";
+            let hasItems = false;
+            for (const key in items) {
+                if (items[key].qty > 0) {
+                    orderSummary += `- ${items[key].name}: **${items[key].qty}** 個\n`;
+                    hasItems = true;
+                }
+            }
+
+            if (!hasItems) {
+                alert("請至少選擇一項商品！");
+                return;
+            }
+
+            // Webhook 資料
+            const webhookUrl = "https://discord.com/api/webhooks/1474069127592411207/ltyixkgYynRNAKVUvlOckguj-DQGTRCvfYyeu8A82JGrGtuStB92T9FYyiznZLj7ypZX";
+            const payload = {
+                username: "商城訂單助手",
+                embeds: [{
+                    title: "🛒 新收到一筆商城訂單",
+                    color: 15844367, // 金色
+                    fields: [
+                        { name: "👤 聯絡人資訊", value: contactInfo, inline: false },
+                        { name: "📦 購買清單", value: orderSummary, inline: false }
+                    ],
+                    footer: { text: "來自 GitHub 官方商城" },
+                    timestamp: new Date()
+                }]
+            };
+
+            // 發送請求
+            submitBtn.disabled = true;
+            statusText.innerText = "發送中...";
+
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    statusText.className = "mt-4 text-center text-green-400";
+                    statusText.innerText = "訂單已成功發送！管理員將儘快聯繫您。";
+                    // 清空表單
+                    document.getElementById('contact').value = "";
+                    for (const key in items) {
+                        items[key].qty = 0;
+                        document.getElementById(key + '-qty').innerText = 0;
+                    }
+                } else {
+                    throw new Error();
+                }
+            } catch (error) {
+                statusText.className = "mt-4 text-center text-red-400";
+                statusText.innerText = "發送失敗，請稍後再試或直接聯繫管理員。";
+            } finally {
+                submitBtn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
