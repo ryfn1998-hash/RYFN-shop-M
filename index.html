@@ -3,204 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>你想要的我都有RYFN商城 訂單填寫</title>
+    <title>你想要的我都有RYFN商城 - 加密安全傳輸</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background: #0a0a0c; color: #f8fafc; font-family: 'Inter', sans-serif; overflow-x: hidden; user-select: none; }
-        .glass { background: rgba(20, 20, 25, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); }
-        .shop-gradient { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .btn-send { background: linear-gradient(90deg, #f59e0b, #ea580c); color: #000; font-weight: 900; }
-        .btn-send:disabled { background: #333; color: #666; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
-        select, input { background: #18181b !important; color: white !important; border: 1px solid #3f3f46 !important; }
-        .hidden-field { display: none !important; visibility: hidden !important; }
+        body { background: #050505; color: #f8fafc; font-family: 'Inter', sans-serif; user-select: none; }
+        .glass { background: rgba(15, 15, 20, 0.9); border: 1px solid rgba(251, 191, 36, 0.1); backdrop-filter: blur(25px); }
+        .shop-gradient { background: linear-gradient(90deg, #fbbf24, #f59e0b, #ea580c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .btn-send { background: linear-gradient(to right, #fbbf24, #ea580c); color: #000; font-weight: 900; letter-spacing: 2px; }
+        input, select { background: #111 !important; border: 1px solid #222 !important; color: #fbbf24 !important; }
+        .hidden-field { display: none; visibility: hidden; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center p-6 md:p-12 w-full" oncontextmenu="return false;">
+<body oncontextmenu="return false;" onkeydown="return _0x_check(event);">
 
-    <div class="w-full max-w-4xl">
-        <header class="text-center mb-12">
-            <h1 class="text-5xl md:text-7xl font-black shop-gradient mb-4 italic uppercase tracking-tighter text-center w-full">你想要的我都有RYFN商城</h1>
-            <div class="h-1.5 w-32 bg-amber-500 mx-auto rounded-full"></div>
+    <div class="min-h-screen flex flex-col items-center p-6 md:p-12">
+        <header class="text-center mb-16">
+            <h1 class="text-5xl md:text-7xl font-black shop-gradient italic uppercase mb-4">RYFN 商城</h1>
+            <p class="text-[10px] tracking-[0.5em] text-gray-600 uppercase font-bold text-center">Secure Order Synchronization System</p>
         </header>
 
-        <div class="space-y-8">
-            <div class="glass p-8 rounded-[2rem] shadow-2xl">
-                <h2 class="text-amber-500 font-black text-xl mb-6 flex items-center uppercase italic">01. Identity / 驗證身分</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-2">
-                        <label class="text-[10px] text-gray-500 font-bold ml-1 tracking-widest uppercase">Discord ID (用戶名#0000)</label>
-                        <input type="text" id="discord_user" placeholder="必填" class="w-full p-4 rounded-xl transition-all">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] text-gray-500 font-bold ml-1 tracking-widest uppercase">Gmail 聯絡信箱</label>
-                        <input type="text" id="user_gmail" placeholder="必須包含 @gmail.com" class="w-full p-4 rounded-xl transition-all">
-                    </div>
-                    <input type="text" id="trap_field" class="hidden-field">
+        <div class="w-full max-w-3xl space-y-10">
+            <div class="glass p-8 rounded-[2rem] shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10 font-black text-6xl">01</div>
+                <h2 class="text-amber-500 font-bold mb-6 italic tracking-widest uppercase">Identity Verification</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <input type="text" id="_u_d" placeholder="DISCORD ID (User#0000)" class="w-full p-4 rounded-xl outline-none focus:border-amber-500 transition-all">
+                    <input type="text" id="_u_g" placeholder="GMAIL ADDRESS" class="w-full p-4 rounded-xl outline-none focus:border-amber-500 transition-all">
                 </div>
             </div>
 
-            <div class="glass p-8 rounded-[2rem] shadow-2xl">
-                <h2 class="text-amber-500 font-black text-xl mb-6 flex items-center uppercase italic">02. Select Items / 挑選物資</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="selectors">
-                    <select id="sel-1" class="w-full p-4 rounded-xl transition-all"></select>
-                    <select id="sel-2" class="w-full p-4 rounded-xl transition-all"></select>
-                    <select id="sel-3" class="w-full p-4 rounded-xl transition-all"></select>
+            <div class="glass p-8 rounded-[2rem]">
+                <h2 class="text-amber-500 font-bold mb-6 italic tracking-widest uppercase">Select Resources</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <select id="s1" class="p-4 rounded-xl"></select>
+                    <select id="s2" class="p-4 rounded-xl"></select>
+                    <select id="s3" class="p-4 rounded-xl"></select>
                 </div>
-                <button onclick="addToCart()" class="w-full mt-6 p-4 bg-white/5 hover:bg-white/10 rounded-2xl font-black border border-white/5 text-amber-500">加入購物清單 +</button>
+                <button onclick="_0x_add()" class="w-full mt-6 p-4 bg-white/5 hover:bg-white/10 rounded-2xl font-black text-amber-500 border border-dashed border-amber-500/30">ADD TO CART +</button>
             </div>
 
-            <div class="glass p-8 rounded-[2rem] border border-amber-500/20">
-                <h2 class="text-amber-500 font-black text-xl mb-6 flex items-center uppercase italic">03. Final Cart / 您的訂單</h2>
-                <div id="cart-container" class="space-y-4">
-                    <div class="text-center py-10 text-gray-600 italic">清單目前是空的...</div>
-                </div>
-                <div id="final-area" class="mt-10 hidden border-t border-white/5 pt-8">
-                    <button onclick="safeSubmit()" id="submit-btn" class="btn-send w-full py-6 rounded-2xl text-2xl shadow-xl active:scale-95 transition-all">
-                        發送表單
-                    </button>
-                    <p id="status-msg" class="text-center mt-4 font-bold text-sm tracking-widest"></p>
-                </div>
+            <div class="glass p-8 rounded-[2rem] border-t-2 border-amber-500/50 shadow-[0_-20px_50px_rgba(245,158,11,0.1)]">
+                <div id="_cart_list" class="space-y-4 mb-10 text-center text-gray-500 italic">清單目前為空...</div>
+                <button id="_0x_btn" onclick="_0x_execute()" class="btn-send w-full py-6 rounded-2xl text-2xl hidden">CONFIRM & SYNC</button>
+                <p id="_0x_st" class="text-center mt-4 font-bold text-xs tracking-widest"></p>
             </div>
         </div>
     </div>
 
     <script>
-        // --- 超強加密混淆區 ---
-        // 將 Webhook URL 拆分並 Base64 加密，防止屁孩直接用搜尋找到 URL
-        const _0x5a1 = ["aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQ3NDA2OTEyNzU5MjQxMTIwNy8=", "bHR5aXhrR3l5blJOQUtWVXZsT2Nra3VqLURRR1RSQ3ZmWXlldThBODJKR3JHdHVTdEI5MlQ5Rll5aXpuWkxqN3lwWlg="];
-        const getGate = () => atob(_0x5a1[0]) + atob(_0x5a1[1]);
-
-        // 防 F12 簡易檢測
-        setInterval(function() {
-            if (window.outerHeight - window.innerHeight > 160 || window.outerWidth - window.innerWidth > 160) {
-                document.body.innerHTML = "<h1 style='color:white;text-align:center;margin-top:20%'>偵測到非法環境，請關閉開發者工具並重新整理。</h1>";
-            }
+        // --- 核心安全防護混淆 ---
+        const _0x_key = ["aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQ3NDY1MTI1ODAwOTY4MjAxMy8=", "Q2tRRlBhdW1RMWNCRUFrcXdqWFROYkxiendudmRMTGpvcjctbV9PRFZUdkVBTmZkWUdhTm1jbjlzWTlaUFU2NV9GckJy"];
+        
+        // 偵測 F12
+        setInterval(() => {
+            const devtools = /./;
+            devtools.toString = function() {
+                document.body.innerHTML = "<h1>SECURITY VIOLATION</h1>";
+                window.location.href = "about:blank";
+            };
+            console.log(devtools);
         }, 1000);
 
-        // 禁止特定按鍵 (F12, Ctrl+Shift+I, etc.)
-        document.onkeydown = function(e) {
-            if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0))) || (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0))) {
+        function _0x_check(e) {
+            if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || (e.ctrlKey && e.keyCode == 85)) {
                 return false;
             }
-        };
-
-        let cart = {};
-
-        function initShop() {
-            for (let i = 1; i <= 3; i++) {
-                const sel = document.getElementById(`sel-${i}`);
-                sel.innerHTML = `<option value="">-- 選擇分類 ${i} --</option>`;
-                for (let j = 1; j <= 20; j++) {
-                    sel.innerHTML += `<option value="${i}-${j}">物資 ${i}-${j}</option>`;
-                }
-            }
         }
 
-        function addToCart() {
-            let found = false;
-            ['sel-1', 'sel-2', 'sel-3'].forEach(id => {
-                const val = document.getElementById(id).value;
-                if (val) {
-                    cart[val] = (cart[val] || 0) + 1;
-                    document.getElementById(id).value = "";
-                    found = true;
-                }
+        let _c = {};
+
+        function _0x_add() {
+            let f = false;
+            ['s1','s2','s3'].forEach(i => {
+                const v = document.getElementById(i).value;
+                if(v) { _c[v] = (_c[v] || 0) + 1; document.getElementById(i).value = ""; f = true; }
             });
-            if (found) renderCart();
+            if(f) _0x_render();
         }
 
-        function renderCart() {
-            const container = document.getElementById('cart-container');
-            const finalArea = document.getElementById('final-area');
-            const keys = Object.keys(cart);
-            if (keys.length === 0) {
-                container.innerHTML = '<div class="text-center py-10 text-gray-600 italic">尚未選擇任何物資...</div>';
-                finalArea.classList.add('hidden');
-                return;
-            }
-            finalArea.classList.remove('hidden');
-            container.innerHTML = '';
-            keys.forEach(key => {
-                const item = document.createElement('div');
-                item.className = "flex items-center justify-between bg-black/40 p-5 rounded-2xl border border-white/5 shadow-inner";
-                item.innerHTML = `<span class="text-xl font-bold text-amber-500">${key}</span>
-                    <div class="flex items-center space-x-6">
-                        <div class="flex items-center bg-zinc-900 rounded-xl overflow-hidden border border-zinc-700">
-                            <button onclick="updateQty('${key}', -1)" class="w-10 h-10 hover:bg-red-500/20 text-red-500 font-bold">-</button>
-                            <span class="w-12 text-center font-mono text-xl">${cart[key]}</span>
-                            <button onclick="updateQty('${key}', 1)" class="w-10 h-10 hover:bg-green-500/20 text-green-500 font-bold">+</button>
-                        </div>
-                    </div>`;
-                container.appendChild(item);
-            });
+        function _0x_render() {
+            const l = document.getElementById('_cart_list');
+            const b = document.getElementById('_0x_btn');
+            const keys = Object.keys(_c);
+            if(keys.length === 0) { l.innerHTML = "清單目前為空..."; b.classList.add('hidden'); return; }
+            b.classList.remove('hidden');
+            l.innerHTML = keys.map(k => `<div class="flex justify-between p-4 bg-white/5 rounded-xl border border-white/5"><span class="font-bold text-amber-500">${k}</span><span class="font-mono">x${_c[k]}</span></div>`).join('');
         }
 
-        function updateQty(key, delta) {
-            cart[key] += delta;
-            if (cart[key] <= 0) delete cart[key];
-            renderCart();
-        }
+        async function _0x_execute() {
+            const u = document.getElementById('_u_d').value.trim();
+            const g = document.getElementById('_u_g').value.trim();
+            const s = document.getElementById('_0x_st');
+            const b = document.getElementById('_0x_btn');
 
-        async function safeSubmit() {
-            const discordUser = document.getElementById('discord_user').value.trim();
-            const userGmail = document.getElementById('user_gmail').value.trim();
-            const trap = document.getElementById('trap_field').value;
-            const btn = document.getElementById('submit-btn');
-            const status = document.getElementById('status-msg');
+            if(!u.includes('#') || !g.endsWith('@gmail.com')) return alert("INVALID DATA");
 
-            // 屁孩防禦
-            if (trap) return; 
-            if (!discordUser.includes('#') || !userGmail.endsWith("@gmail.com")) {
-                alert("請填寫正確格式！");
-                return;
-            }
+            b.disabled = true;
+            s.innerText = "ENCRYPTING DATA...";
 
-            // 冷卻檢查
-            const last = localStorage.getItem('_rt');
-            if (last && Date.now() - last < 60000) {
-                alert("發送太頻繁，請等待 1 分鐘");
-                return;
-            }
+            // 這裡會從混淆的字串段落重組 Webhook
+            const _target = atob(_0x_key[0]) + atob(_0x_key[1]);
+            const _p = {
+                username: "RYFN 訂單節點",
+                embeds: [{
+                    title: "📦 RYFN 訂單同步成功",
+                    color: 16753920,
+                    fields: [
+                        { name: "USER", value: `\`${u}\``, inline: true },
+                        { name: "MAIL", value: `\`${g}\``, inline: true },
+                        { name: "DATA", value: Object.keys(_c).map(k => `> ${k} [${_c[k]}]`).join('\n') }
+                    ],
+                    footer: { text: "NODE: RYFN-SECURE-GATEWAY" },
+                    timestamp: new Date()
+                }]
+            };
 
-            btn.disabled = true;
-            status.innerText = "⚡ 正在建立安全連線...";
-
-            const content = Object.keys(cart).map(k => `> 📦 **物資 ${k}** | 數量：\`${cart[k]}\``).join('\n');
-            
             try {
-                // 動態獲取解密後的網址
-                const target = getGate();
-                const res = await fetch(target, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        username: "RYFN 安全商城",
-                        embeds: [{
-                            title: "🔥 收到新訂單 (已通過安全檢查)",
-                            color: 16753920,
-                            fields: [
-                                { name: "👤 買家", value: `\`${discordUser}\``, inline: true },
-                                { name: "📧 信箱", value: `\`${userGmail}\``, inline: true },
-                                { name: "📋 內容", value: content }
-                            ],
-                            timestamp: new Date()
-                        }]
-                    })
-                });
-
-                if (res.ok) {
-                    status.className = "text-center mt-4 text-green-400 font-bold";
-                    status.innerText = "✅ 訂單已安全送出";
-                    localStorage.setItem('_rt', Date.now());
-                    cart = {};
-                    renderCart();
-                } else { throw new Error(); }
-            } catch (e) {
-                status.innerText = "❌ 連線失敗";
-                btn.disabled = false;
-            }
+                const r = await fetch(_target, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(_p) });
+                if(r.ok) {
+                    s.className = "text-center mt-4 text-green-500 font-bold";
+                    s.innerText = "DONE: SYNCHRONIZED";
+                    _c = {}; _0x_render();
+                }
+            } catch (e) { s.innerText = "ERROR"; b.disabled = false; }
         }
-        initShop();
+
+        // 初始化選單
+        (function(){
+            for(let i=1;i<=3;i++){
+                const e = document.getElementById(`s${i}`);
+                e.innerHTML = `<option value="">-- SERIES ${i} --</option>`;
+                for(let j=1;j<=20;j++) e.innerHTML += `<option value="${i}-${j}">ITEM ${i}-${j}</option>`;
+            }
+        })();
     </script>
 </body>
 </html>
