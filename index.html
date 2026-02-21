@@ -6,17 +6,16 @@
     <title>你想要的我都有RYFN商城 訂單填寫</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background: #0a0a0c; color: #f8fafc; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        body { background: #0a0a0c; color: #f8fafc; font-family: 'Inter', sans-serif; overflow-x: hidden; user-select: none; }
         .glass { background: rgba(20, 20, 25, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); }
         .shop-gradient { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .btn-send { background: linear-gradient(90deg, #f59e0b, #ea580c); color: #000; font-weight: 900; }
         .btn-send:disabled { background: #333; color: #666; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
         select, input { background: #18181b !important; color: white !important; border: 1px solid #3f3f46 !important; }
-        /* 隱藏陷阱欄位 */
         .hidden-field { display: none !important; visibility: hidden !important; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center p-6 md:p-12 w-full">
+<body class="min-h-screen flex flex-col items-center p-6 md:p-12 w-full" oncontextmenu="return false;">
 
     <div class="w-full max-w-4xl">
         <header class="text-center mb-12">
@@ -29,14 +28,14 @@
                 <h2 class="text-amber-500 font-black text-xl mb-6 flex items-center uppercase italic">01. Identity / 驗證身分</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="space-y-2">
-                        <label class="text-[10px] text-gray-500 font-bold ml-1 tracking-widest uppercase text-center">Discord ID (用戶名#0000)</label>
+                        <label class="text-[10px] text-gray-500 font-bold ml-1 tracking-widest uppercase">Discord ID (用戶名#0000)</label>
                         <input type="text" id="discord_user" placeholder="必填" class="w-full p-4 rounded-xl transition-all">
                     </div>
                     <div class="space-y-2">
                         <label class="text-[10px] text-gray-500 font-bold ml-1 tracking-widest uppercase">Gmail 聯絡信箱</label>
                         <input type="text" id="user_gmail" placeholder="必須包含 @gmail.com" class="w-full p-4 rounded-xl transition-all">
                     </div>
-                    <input type="text" id="honeypot" class="hidden-field text-black">
+                    <input type="text" id="trap_field" class="hidden-field">
                 </div>
             </div>
 
@@ -55,9 +54,8 @@
                 <div id="cart-container" class="space-y-4">
                     <div class="text-center py-10 text-gray-600 italic">清單目前是空的...</div>
                 </div>
-
                 <div id="final-area" class="mt-10 hidden border-t border-white/5 pt-8">
-                    <button onclick="submitToDiscord()" id="submit-btn" class="btn-send w-full py-6 rounded-2xl text-2xl shadow-xl active:scale-95 transition-all">
+                    <button onclick="safeSubmit()" id="submit-btn" class="btn-send w-full py-6 rounded-2xl text-2xl shadow-xl active:scale-95 transition-all">
                         發送表單
                     </button>
                     <p id="status-msg" class="text-center mt-4 font-bold text-sm tracking-widest"></p>
@@ -67,10 +65,27 @@
     </div>
 
     <script>
-        const WEBHOOK_URL = 'https://discord.com/api/webhooks/1474069127592411207/ltyixkgYynRNAKVUvlOckguj-DQGTRCvfYyeu8A82JGrGtuStB92T9FYyiznZLj7ypZX';
+        // --- 超強加密混淆區 ---
+        // 將 Webhook URL 拆分並 Base64 加密，防止屁孩直接用搜尋找到 URL
+        const _0x5a1 = ["aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQ3NDA2OTEyNzU5MjQxMTIwNy8=", "bHR5aXhrR3l5blJOQUtWVXZsT2Nra3VqLURRR1RSQ3ZmWXlldThBODJKR3JHdHVTdEI5MlQ5Rll5aXpuWkxqN3lwWlg="];
+        const getGate = () => atob(_0x5a1[0]) + atob(_0x5a1[1]);
+
+        // 防 F12 簡易檢測
+        setInterval(function() {
+            if (window.outerHeight - window.innerHeight > 160 || window.outerWidth - window.innerWidth > 160) {
+                document.body.innerHTML = "<h1 style='color:white;text-align:center;margin-top:20%'>偵測到非法環境，請關閉開發者工具並重新整理。</h1>";
+            }
+        }, 1000);
+
+        // 禁止特定按鍵 (F12, Ctrl+Shift+I, etc.)
+        document.onkeydown = function(e) {
+            if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0))) || (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0))) {
+                return false;
+            }
+        };
+
         let cart = {};
 
-        // 初始化
         function initShop() {
             for (let i = 1; i <= 3; i++) {
                 const sel = document.getElementById(`sel-${i}`);
@@ -126,73 +141,62 @@
             renderCart();
         }
 
-        // --- 防禦機制邏輯 ---
-        async function submitToDiscord() {
+        async function safeSubmit() {
             const discordUser = document.getElementById('discord_user').value.trim();
             const userGmail = document.getElementById('user_gmail').value.trim();
-            const honeypot = document.getElementById('honeypot').value;
+            const trap = document.getElementById('trap_field').value;
             const btn = document.getElementById('submit-btn');
             const status = document.getElementById('status-msg');
 
-            // 1. 檢查陷阱 (Bot 防禦)
-            if (honeypot) {
-                console.log("Bot detected");
+            // 屁孩防禦
+            if (trap) return; 
+            if (!discordUser.includes('#') || !userGmail.endsWith("@gmail.com")) {
+                alert("請填寫正確格式！");
                 return;
             }
 
-            // 2. 基本格式過濾
-            if (!discordUser.includes('#') && discordUser.length < 3) {
-                alert("請輸入正確的 Discord 名稱（例如: User#0000）");
-                return;
-            }
-            if (!userGmail.toLowerCase().endsWith("@gmail.com")) {
-                alert("信箱格式錯誤，必須是 @gmail.com");
-                return;
-            }
-
-            // 3. 冷卻時間檢查
-            const lastSent = localStorage.getItem('last_order_time');
-            const now = new Date().getTime();
-            if (lastSent && now - lastSent < 300000) { // 5分鐘冷卻
-                const wait = Math.ceil((300000 - (now - lastSent)) / 1000);
-                alert(`發送太頻繁了！請等待 ${wait} 秒後再試。`);
+            // 冷卻檢查
+            const last = localStorage.getItem('_rt');
+            if (last && Date.now() - last < 60000) {
+                alert("發送太頻繁，請等待 1 分鐘");
                 return;
             }
 
             btn.disabled = true;
-            status.innerText = "⚡ 正在發送訂單...";
+            status.innerText = "⚡ 正在建立安全連線...";
 
-            const orderContent = Object.keys(cart).map(k => `> 📦 **物資 ${k}** | 數量：\`${cart[k]}\``).join('\n');
-            const payload = {
-                username: "RYFN 商城訂單機器人",
-                embeds: [{
-                    title: "🔥 新訂單抵達",
-                    color: 16753920,
-                    fields: [
-                        { name: "👤 買家 Discord", value: `\`${discordUser}\``, inline: true },
-                        { name: "📧 聯絡 Gmail", value: `\`${userGmail}\``, inline: true },
-                        { name: "📋 訂購內容", value: orderContent }
-                    ],
-                    footer: { text: "訂單同步" },
-                    timestamp: new Date()
-                }]
-            };
-
+            const content = Object.keys(cart).map(k => `> 📦 **物資 ${k}** | 數量：\`${cart[k]}\``).join('\n');
+            
             try {
-                const res = await fetch(WEBHOOK_URL, {
+                // 動態獲取解密後的網址
+                const target = getGate();
+                const res = await fetch(target, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({
+                        username: "RYFN 安全商城",
+                        embeds: [{
+                            title: "🔥 收到新訂單 (已通過安全檢查)",
+                            color: 16753920,
+                            fields: [
+                                { name: "👤 買家", value: `\`${discordUser}\``, inline: true },
+                                { name: "📧 信箱", value: `\`${userGmail}\``, inline: true },
+                                { name: "📋 內容", value: content }
+                            ],
+                            timestamp: new Date()
+                        }]
+                    })
                 });
+
                 if (res.ok) {
-                    status.className = "text-center mt-4 font-bold text-green-400";
-                    status.innerText = "✅ 訂單已發送！";
-                    localStorage.setItem('last_order_time', new Date().getTime()); // 紀錄發送時間
+                    status.className = "text-center mt-4 text-green-400 font-bold";
+                    status.innerText = "✅ 訂單已安全送出";
+                    localStorage.setItem('_rt', Date.now());
                     cart = {};
                     renderCart();
                 } else { throw new Error(); }
             } catch (e) {
-                status.innerText = "❌ 發送失敗。請稍後再試";
+                status.innerText = "❌ 連線失敗";
                 btn.disabled = false;
             }
         }
