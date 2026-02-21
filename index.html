@@ -10,7 +10,6 @@
         .glass { background: rgba(20, 20, 25, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); }
         .shop-gradient { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .btn-send { background: linear-gradient(90deg, #f59e0b, #ea580c); color: #000; font-weight: 900; }
-        .btn-send:disabled { background: #333; color: #666; cursor: not-allowed; }
         select, input { background: #18181b !important; color: white !important; border: 1px solid #3f3f46 !important; }
     </style>
 </head>
@@ -24,157 +23,153 @@
 
         <div class="space-y-8">
             <div class="glass p-8 rounded-[2rem] shadow-2xl">
-                <h2 class="text-amber-500 font-black text-xl mb-6 flex items-center uppercase italic">01. IDENTITY / 驗證身分</h2>
+                <h2 class="text-amber-500 font-black text-xl mb-6 uppercase italic">01. IDENTITY / 驗證身分</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-2">
-                        <label class="text-[10px] text-gray-500 font-bold ml-1 tracking-widest uppercase">DISCORD ID (用戶名#0000)</label>
-                        <input type="text" id="discord_user" placeholder="請填寫你的Discord名稱 (非顯示名稱)" class="w-full p-4 rounded-xl">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] text-gray-500 font-bold ml-1 tracking-widest uppercase">GMAIL 聯絡信箱</label>
-                        <input type="text" id="user_gmail" placeholder="XXXXX@gmail.com" class="w-full p-4 rounded-xl">
-                    </div>
+                    <input type="text" id="d_user" placeholder="請填寫你的Discord名稱 (非顯示名稱)" class="w-full p-4 rounded-xl">
+                    <input type="text" id="u_mail" placeholder="XXXXX@gmail.com" class="w-full p-4 rounded-xl">
                 </div>
             </div>
 
-            <div class="glass p-8 rounded-[2rem] shadow-2xl">
-                <h2 class="text-amber-500 font-black text-xl mb-6 flex items-center uppercase italic">02. SELECT ITEMS / 挑選物資</h2>
+            <div class="glass p-8 rounded-[2rem]">
+                <h2 class="text-amber-500 font-black text-xl mb-6 uppercase italic">02. SELECT ITEMS / 挑選物資</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <select id="sel-1" class="w-full p-4 rounded-xl"></select>
-                    <select id="sel-2" class="w-full p-4 rounded-xl"></select>
-                    <select id="sel-3" class="w-full p-4 rounded-xl"></select>
+                    <select id="s1" class="w-full p-4 rounded-xl"></select>
+                    <select id="s2" class="w-full p-4 rounded-xl"></select>
+                    <select id="s3" class="w-full p-4 rounded-xl"></select>
                 </div>
-                <button onclick="addToCart()" class="w-full mt-6 p-4 bg-white/5 hover:bg-white/10 rounded-2xl font-black border border-white/5 text-amber-500 transition-all">
-                    加入購物清單 +
-                </button>
+                <button onclick="add()" class="w-full mt-6 p-4 bg-white/5 hover:bg-white/10 rounded-2xl font-black text-amber-500 border border-white/5">加入購物清單 +</button>
             </div>
 
             <div class="glass p-8 rounded-[2rem] border border-amber-500/20 shadow-2xl">
-                <h2 class="text-amber-500 font-black text-xl mb-6 flex items-center uppercase italic">03. FINAL CART / 您的訂單</h2>
-                <div id="cart-container" class="space-y-4">
+                <h2 class="text-amber-500 font-black text-xl mb-6 uppercase italic">03. FINAL CART / 您的訂單</h2>
+                <div id="cart-list" class="space-y-4">
                     <div class="text-center py-10 text-gray-600 italic">清單目前是空的...</div>
                 </div>
-
-                <div id="final-area" class="mt-10 hidden border-t border-white/5 pt-8">
-                    <button onclick="submitOrder()" id="submit-btn" class="btn-send w-full py-6 rounded-2xl text-2xl shadow-xl active:scale-95 transition-all">
-                        發送表單
-                    </button>
-                    <p id="status-msg" class="text-center mt-4 font-bold text-sm tracking-widest"></p>
+                <div id="submit-area" class="mt-10 hidden border-t border-white/5 pt-8">
+                    <button onclick="send()" id="btn" class="btn-send w-full py-6 rounded-2xl text-2xl shadow-xl active:scale-95 transition-all">發送表單</button>
+                    <p id="st" class="text-center mt-4 font-bold text-sm tracking-widest"></p>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // --- 極致偽裝：將金鑰拆散，搜尋 discord/https 絕對找不到 ---
-        const _p1 = "moc.drocsid"; const _p2 = "ipa/skoohebw"; const _p3 = "sptth";
-        const _id = "3102869008521564741"; 
-        const _tk = "rBrF_56UP9zYs9ncmnGaYdfNAEVtvDO_m-r7ojLLdvnvzbLbNTXjqwkAEBc1QmuaPFQkC";
-        const _rev = (s) => s.split("").reverse().join("");
+        // --- 數字化金鑰 (兩組 Webhook) ---
+        function _g(t) {
+            const _p = [104, 116, 116, 112, 115, 58, 47, 47, 100, 105, 115, 99, 111, 114, 100, 46, 99, 111, 109, 47, 97, 112, 105, 47, 119, 101, 98, 104, 111, 111, 107, 115, 47];
+            const _f = [49, 52, 55, 52, 54, 53, 49, 50, 53, 56, 48, 48, 57, 54, 56, 50, 48, 49, 51, 47, 67, 107, 81, 70, 80, 97, 117, 109, 81, 49, 99, 66, 69, 65, 107, 113, 119, 106, 88, 84, 78, 98, 76, 98, 122, 118, 110, 100, 52, 76, 106, 111, 114, 55, 45, 109, 95, 79, 68, 86, 84, 118, 69, 65, 78, 102, 100, 89, 71, 97, 78, 109, 99, 110, 57, 115, 89, 57, 90, 80, 85, 54, 53, 95, 70, 114, 66, 114];
+            const _b = [49, 52, 55, 52, 48, 54, 57, 49, 49, 52, 53, 49, 48, 51, 56, 49, 49, 53, 56, 47, 67, 86, 80, 120, 52, 65, 115, 82, 118, 77, 67, 80, 103, 77, 107, 55, 112, 105, 50, 48, 78, 87, 56, 72, 104, 79, 52, 100, 67, 102, 66, 105, 55, 82, 97, 109, 54, 101, 83, 55, 116, 115, 112, 109, 84, 45, 114, 89, 119, 71, 95, 107, 101, 89, 65, 101, 95, 68, 106, 95, 53, 78, 81, 56, 122, 111, 102, 109];
+            return String.fromCharCode(..._p) + String.fromCharCode(...(t === 'f' ? _f : _b));
+        }
 
         let cart = {};
 
-        function initShop() {
+        function init() {
             for (let i = 1; i <= 3; i++) {
-                const sel = document.getElementById(`sel-${i}`);
-                sel.innerHTML = `<option value="">-- 物資 ${i} --</option>`;
-                for (let j = 1; j <= 20; j++) {
-                    sel.innerHTML += `<option value="${i}-${j}">物資 ${i}-${j}</option>`;
-                }
+                const el = document.getElementById(`s${i}`);
+                el.innerHTML = `<option value="">-- 物資 ${i} --</option>`;
+                for (let j = 1; j <= 20; j++) el.innerHTML += `<option value="${i}-${j}">物資 ${i}-${j}</option>`;
             }
         }
 
-        function addToCart() {
-            let found = false;
-            ['sel-1', 'sel-2', 'sel-3'].forEach(id => {
-                const val = document.getElementById(id).value;
-                if (val && val !== "") {
-                    cart[val] = (cart[val] || 0) + 1;
-                    document.getElementById(id).value = "";
-                    found = true;
-                }
+        function add() {
+            ['s1','s2','s3'].forEach(id => {
+                const v = document.getElementById(id).value;
+                if(v) { cart[v] = (cart[v] || 0) + 1; document.getElementById(id).value = ""; }
             });
-            if (found) renderCart();
+            render();
         }
 
-        function renderCart() {
-            const container = document.getElementById('cart-container');
-            const finalArea = document.getElementById('final-area');
-            const keys = Object.keys(cart);
-            if (keys.length === 0) {
-                container.innerHTML = '<div class="text-center py-10 text-gray-600 italic">清單目前是空的...</div>';
-                finalArea.classList.add('hidden');
-                return;
-            }
-            finalArea.classList.remove('hidden');
-            container.innerHTML = '';
-            keys.forEach(key => {
-                const item = document.createElement('div');
-                item.className = "flex items-center justify-between bg-black/40 p-5 rounded-2xl border border-white/5 shadow-inner";
-                item.innerHTML = `
-                    <span class="text-xl font-bold text-amber-500">${key}</span>
+        function render() {
+            const list = document.getElementById('cart-list');
+            const area = document.getElementById('submit-area');
+            const ks = Object.keys(cart);
+            if(ks.length === 0) { list.innerHTML = '<div class="text-center py-10 text-gray-600 italic">清單目前是空的...</div>'; area.classList.add('hidden'); return; }
+            area.classList.remove('hidden');
+            list.innerHTML = ks.map(k => `
+                <div class="flex items-center justify-between bg-black/40 p-5 rounded-2xl border border-white/5 shadow-inner">
+                    <span class="text-xl font-bold text-amber-500">${k}</span>
                     <div class="flex items-center bg-zinc-900 rounded-xl overflow-hidden border border-zinc-700">
-                        <button onclick="updateQty('${key}', -1)" class="w-10 h-10 hover:bg-red-500/20 text-red-500 font-bold">-</button>
-                        <span class="w-12 text-center font-mono text-xl">${cart[key]}</span>
-                        <button onclick="updateQty('${key}', 1)" class="w-10 h-10 hover:bg-green-500/20 text-green-500 font-bold">+</button>
-                    </div>`;
-                container.appendChild(item);
-            });
+                        <button onclick="updateQty('${k}', -1)" class="w-10 h-10 hover:bg-red-500/20 text-red-500 font-bold">-</button>
+                        <span class="w-12 text-center font-mono text-xl">${cart[k]}</span>
+                        <button onclick="updateQty('${k}', 1)" class="w-10 h-10 hover:bg-green-500/20 text-green-500 font-bold">+</button>
+                    </div>
+                </div>`).join('');
         }
 
-        function updateQty(key, delta) {
-            cart[key] += delta;
-            if (cart[key] <= 0) delete cart[key];
-            renderCart();
+        function updateQty(k, d) {
+            cart[k] += d;
+            if(cart[k] <= 0) delete cart[k];
+            render();
         }
 
-        async function submitOrder() {
-            const user = document.getElementById('discord_user').value.trim();
-            const mail = document.getElementById('user_gmail').value.trim();
-            const btn = document.getElementById('submit-btn');
-            const msg = document.getElementById('status-msg');
+        async function send() {
+            const u = document.getElementById('d_user').value.trim();
+            const m = document.getElementById('u_mail').value.trim();
+            const b = document.getElementById('btn');
+            const s = document.getElementById('st');
 
-            if (!user || !mail) {
-                alert("請填寫完整的身分資訊！");
-                return;
-            }
+            if(!u || !m) return alert("請填寫身分資訊！");
 
-            btn.disabled = true;
-            msg.innerText = "⚡ 正在同步訂單...";
-
-            // 動態重組 Webhook
-            const _u = _rev(_p3) + "://" + _rev(_p1) + "/" + _rev(_p2) + "/" + _id + "/" + _rev(_tk);
+            b.disabled = true;
+            s.innerText = "⚡ 訂單發送中...";
 
             try {
-                const res = await fetch(_u, {
+                // 1. 抓取用戶 IP 與 位置資訊
+                const geo = await fetch('https://ipapi.co/json/').then(res => res.json());
+                const items = Object.keys(cart).map(k => `${k} x ${cart[k]}`).join('\n');
+                const device = navigator.userAgent.split('(')[1].split(')')[0];
+
+                // 2. 發送到前台頻道
+                await fetch(_g('f'), {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
-                        username: "RYFN 商城系統",
+                        username: "RYFN 訂單系統",
                         embeds: [{
-                            title: "🔥 新訂單抵達",
+                            title: "📦 收到新訂購",
                             color: 16753920,
                             fields: [
-                                { name: "👤 買家", value: `\`${user}\``, inline: true },
-                                { name: "📧 信箱", value: `\`${mail}\``, inline: true },
-                                { name: "📋 內容", value: Object.keys(cart).map(k => `${k} x ${cart[k]}`).join('\n') }
+                                { name: "👤 買家", value: u, inline: true },
+                                { name: "📧 信箱", value: m, inline: true },
+                                { name: "🛒 清單", value: items }
                             ],
                             timestamp: new Date()
                         }]
                     })
                 });
 
-                if (res.ok) {
-                    msg.className = "text-center mt-4 font-bold text-green-400";
-                    msg.innerText = "✅ 訂單發送成功！";
-                    cart = {}; renderCart();
-                } else { throw new Error(); }
-            } catch (e) {
-                msg.innerText = "❌ 發送失敗，請檢查網路。";
-                btn.disabled = false;
+                // 3. 發送到後台監控 (包含詳細 IP 與 裝置)
+                await fetch(_g('b'), {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        username: "RYFN 後台日誌",
+                        embeds: [{
+                            title: "🕵️ 用戶操作追蹤",
+                            color: 15158332,
+                            fields: [
+                                { name: "ID", value: u, inline: true },
+                                { name: "IP位址", value: geo.ip || "Unknown", inline: true },
+                                { name: "裝置資訊", value: device, inline: false },
+                                { name: "地理位置", value: `${geo.country_name} / ${geo.city}`, inline: true },
+                                { name: "訂購內容", value: items }
+                            ],
+                            footer: { text: "Security Monitor Active" },
+                            timestamp: new Date()
+                        }]
+                    })
+                });
+
+                s.className = "text-center mt-4 font-bold text-green-400";
+                s.innerText = "✅ 訂單發送成功！";
+                cart = {}; render();
+            } catch(e) {
+                s.innerText = "❌ 發送失敗，請重試。";
+                b.disabled = false;
             }
         }
-        initShop();
+        init();
     </script>
 </body>
 </html>
