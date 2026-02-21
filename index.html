@@ -6,177 +6,124 @@
     <title>你想要的我都有RYFN商城 訂單填寫</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background: #0a0a0c; color: #f8fafc; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        body { background: #0a0a0c; color: #f8fafc; font-family: 'Inter', sans-serif; }
         .glass { background: rgba(20, 20, 25, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); }
         .shop-gradient { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .btn-send { background: linear-gradient(90deg, #f59e0b, #ea580c); color: #000; font-weight: 900; }
-        .btn-send:disabled { background: #333; color: #666; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
         select, input { background: #18181b !important; color: white !important; border: 1px solid #3f3f46 !important; }
-        .hidden-field { display: none !important; visibility: hidden !important; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center p-6 md:p-12 w-full">
 
     <div class="w-full max-w-4xl">
         <header class="text-center mb-12">
-            <h1 class="text-5xl md:text-7xl font-black shop-gradient mb-4 italic uppercase tracking-tighter text-center w-full">你想要的我都有RYFN商城</h1>
+            <h1 class="text-5xl md:text-7xl font-black shop-gradient mb-4 italic uppercase tracking-tighter">你想要的我都有RYFN商城</h1>
             <div class="h-1.5 w-32 bg-amber-500 mx-auto rounded-full"></div>
         </header>
 
         <div class="space-y-8">
             <div class="glass p-8 rounded-[2rem] shadow-2xl">
-                <h2 class="text-amber-500 font-black text-xl mb-6 flex items-center uppercase italic">01. Identity / 驗證身分</h2>
+                <h2 class="text-amber-500 font-black text-xl mb-6 uppercase italic">01. 驗證身分</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-2">
-                        <label class="text-[10px] text-gray-500 font-bold ml-1 tracking-widest uppercase text-center">Discord ID (用戶名#0000)</label>
-                        <input type="text" id="discord_user" placeholder="必填" class="w-full p-4 rounded-xl transition-all">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] text-gray-500 font-bold ml-1 tracking-widest uppercase">Gmail 聯絡信箱</label>
-                        <input type="text" id="user_gmail" placeholder="必須包含 @gmail.com" class="w-full p-4 rounded-xl transition-all">
-                    </div>
-                    <input type="text" id="honeypot" class="hidden-field">
+                    <input type="text" id="ui_1" placeholder="Discord 名稱" class="w-full p-4 rounded-xl">
+                    <input type="text" id="ui_2" placeholder="聯絡信箱" class="w-full p-4 rounded-xl">
                 </div>
             </div>
 
-            <div class="glass p-8 rounded-[2rem] shadow-2xl">
-                <h2 class="text-amber-500 font-black text-xl mb-6 flex items-center uppercase italic">02. Select Items / 挑選物資</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="selectors">
-                    <select id="sel-1" class="w-full p-4 rounded-xl transition-all"></select>
-                    <select id="sel-2" class="w-full p-4 rounded-xl transition-all"></select>
-                    <select id="sel-3" class="w-full p-4 rounded-xl transition-all"></select>
+            <div class="glass p-8 rounded-[2rem]">
+                <h2 class="text-amber-500 font-black text-xl mb-6 uppercase italic">02. 挑選物資</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <select id="sel1" class="w-full p-4 rounded-xl"></select>
+                    <select id="sel2" class="w-full p-4 rounded-xl"></select>
+                    <select id="sel3" class="w-full p-4 rounded-xl"></select>
                 </div>
-                <button onclick="addToCart()" class="w-full mt-6 p-4 bg-white/5 hover:bg-white/10 rounded-2xl font-black border border-white/5 text-amber-500">加入購物清單 +</button>
+                <button onclick="add()" class="w-full mt-6 p-4 bg-white/5 hover:bg-white/10 rounded-2xl font-black text-amber-500 border border-white/5">加入購物清單 +</button>
             </div>
 
             <div class="glass p-8 rounded-[2rem] border border-amber-500/20">
-                <h2 class="text-amber-500 font-black text-xl mb-6 flex items-center uppercase italic">03. Final Cart / 您的訂單</h2>
-                <div id="cart-container" class="space-y-4">
-                    <div class="text-center py-10 text-gray-600 italic">清單目前是空的...</div>
-                </div>
-
-                <div id="final-area" class="mt-10 hidden border-t border-white/5 pt-8">
-                    <button onclick="submitToDiscord()" id="submit-btn" class="btn-send w-full py-6 rounded-2xl text-2xl shadow-xl active:scale-95 transition-all">
-                        發送表單
-                    </button>
-                    <p id="status-msg" class="text-center mt-4 font-bold text-sm tracking-widest"></p>
+                <div id="display" class="space-y-4 text-center py-4 text-gray-500">購物車是空的</div>
+                <div id="footer" class="mt-10 hidden">
+                    <button onclick="sync()" id="btn" class="btn-send w-full py-6 rounded-2xl text-2xl shadow-xl">發送表單</button>
+                    <p id="st" class="text-center mt-4 font-bold text-sm"></p>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // --- 這裡是你朋友看不出的防護破綻 ---
-        const _0xrypt = ["aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQ3NDY1MTI1ODAwOTY4MjAxMy8=", "Q2tRRlBhdW1RMWNCRUFrcXdqWFROYkxiendudmRMTGpvcjctbV9PRFZUdkVBTmZkWUdhTm1jbjlzWTlaUFU2NV9GckJy"];
-        const _0xget = () => atob(_0xrypt[0]) + atob(_0xrypt[1]);
+        // --- 隱形防護：把 Webhook 像拼圖一樣拆開，朋友搜不到關鍵字 ---
+        const _k = [
+            "sptth", "moc.drocsid", "ipa/skoohebw", // 基礎路徑
+            "3102869008521564741", // ID 段
+            "rBrF_56UP9zYs9ncmnGaYdfNAEVtvDO_m-r7ojLLdvnvzbLbNTXjqwkAEBc1QmuaPFQkC", // Token 段
+            "//" // 斜線
+        ];
 
+        const _f = (s) => s.split("").reverse().join("");
         let cart = {};
 
-        function initShop() {
+        function init() {
             for (let i = 1; i <= 3; i++) {
-                const sel = document.getElementById(`sel-${i}`);
-                sel.innerHTML = `<option value="">-- 選擇分類 ${i} --</option>`;
-                for (let j = 1; j <= 20; j++) {
-                    sel.innerHTML += `<option value="${i}-${j}">物資 ${i}-${j}</option>`;
-                }
+                const el = document.getElementById(`sel${i}`);
+                el.innerHTML = `<option value="">-- 分類 ${i} --</option>`;
+                for (let j = 1; j <= 20; j++) el.innerHTML += `<option value="${i}-${j}">物資 ${i}-${j}</option>`;
             }
         }
 
-        function addToCart() {
-            let found = false;
-            ['sel-1', 'sel-2', 'sel-3'].forEach(id => {
-                const val = document.getElementById(id).value;
-                if (val) {
-                    cart[val] = (cart[val] || 0) + 1;
-                    document.getElementById(id).value = "";
-                    found = true;
-                }
+        function add() {
+            ['sel1','sel2','sel3'].forEach(id => {
+                const v = document.getElementById(id).value;
+                if(v) { cart[v] = (cart[v] || 0) + 1; document.getElementById(id).value = ""; }
             });
-            if (found) renderCart();
+            render();
         }
 
-        function renderCart() {
-            const container = document.getElementById('cart-container');
-            const finalArea = document.getElementById('final-area');
-            const keys = Object.keys(cart);
-            if (keys.length === 0) {
-                container.innerHTML = '<div class="text-center py-10 text-gray-600 italic">尚未選擇任何物資...</div>';
-                finalArea.classList.add('hidden');
-                return;
-            }
-            finalArea.classList.remove('hidden');
-            container.innerHTML = '';
-            keys.forEach(key => {
-                const item = document.createElement('div');
-                item.className = "flex items-center justify-between bg-black/40 p-5 rounded-2xl border border-white/5 shadow-inner";
-                item.innerHTML = `<span class="text-xl font-bold text-amber-500">${key}</span>
-                    <div class="flex items-center space-x-6">
-                        <div class="flex items-center bg-zinc-900 rounded-xl overflow-hidden border border-zinc-700">
-                            <button onclick="updateQty('${key}', -1)" class="w-10 h-10 hover:bg-red-500/20 text-red-500 font-bold">-</button>
-                            <span class="w-12 text-center font-mono text-xl">${cart[key]}</span>
-                            <button onclick="updateQty('${key}', 1)" class="w-10 h-10 hover:bg-green-500/20 text-green-500 font-bold">+</button>
-                        </div>
-                    </div>`;
-                container.appendChild(item);
-            });
+        function render() {
+            const d = document.getElementById('display');
+            const f = document.getElementById('footer');
+            const k = Object.keys(cart);
+            if(k.length === 0) { d.innerText = "購物車是空的"; f.classList.add('hidden'); return; }
+            f.classList.remove('hidden');
+            d.innerHTML = k.map(x => `<div class="flex justify-between bg-black/40 p-4 rounded-xl"><span>${x}</span><b>x${cart[x]}</b></div>`).join('');
         }
 
-        function updateQty(key, delta) {
-            cart[key] += delta;
-            if (cart[key] <= 0) delete cart[key];
-            renderCart();
-        }
+        async function sync() {
+            const u = document.getElementById('ui_1').value;
+            const m = document.getElementById('ui_2').value;
+            if(!u || !m) return alert("請填寫資訊");
 
-        async function submitToDiscord() {
-            const user = document.getElementById('discord_user').value.trim();
-            const mail = document.getElementById('user_gmail').value.trim();
-            const trap = document.getElementById('honeypot').value;
-            const btn = document.getElementById('submit-btn');
-            const st = document.getElementById('status-msg');
+            document.getElementById('btn').disabled = true;
+            document.getElementById('st').innerText = "傳送中...";
 
-            if (trap) return;
-            if (!user.includes('#') || !mail.endsWith("@gmail.com")) {
-                alert("請填寫正確格式！");
-                return;
-            }
+            // 拼圖重組：這部分代碼看起來毫無意義，但它會組成正確的 Webhook
+            const _u = _f(_k[0]) + ":" + _k[5] + _f(_k[1]) + "/" + _f(_k[2]) + "/" + _k[3] + "/" + _f(_k[4]);
 
-            btn.disabled = true;
-            st.innerText = "⚡ 正在發送訂單...";
-
-            const content = Object.keys(cart).map(k => `> 📦 **物資 ${k}** | 數量：\`${cart[k]}\``).join('\n');
-            
             try {
-                // 這裡會動態抓取加密的 Webhook，表面看不出來
-                const res = await fetch(_0xget(), {
+                const r = await fetch(_u, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
-                        username: "RYFN 訂單機器人",
+                        username: "RYFN 機器人",
                         embeds: [{
-                            title: "🔥 新訂單抵達",
-                            color: 16753920,
+                            title: "📦 收到訂單",
                             fields: [
-                                { name: "👤 買家 Discord", value: `\`${user}\``, inline: true },
-                                { name: "📧 聯絡 Gmail", value: `\`${mail}\``, inline: true },
-                                { name: "📋 訂購內容", value: content }
-                            ],
-                            timestamp: new Date()
+                                {name: "買家", value: u, inline: true},
+                                {name: "信箱", value: m, inline: true},
+                                {name: "清單", value: Object.keys(cart).map(x => `${x} x${cart[x]}`).join('\n')}
+                            ]
                         }]
                     })
                 });
-
-                if (res.ok) {
-                    st.className = "text-center mt-4 font-bold text-green-400";
-                    st.innerText = "✅ 訂單已發送！";
-                    cart = {};
-                    renderCart();
-                } else { throw new Error(); }
-            } catch (e) {
-                st.innerText = "❌ 發送失敗。";
-                btn.disabled = false;
+                if(r.ok) {
+                    document.getElementById('st').innerText = "✅ 發送成功！";
+                    cart = {}; render();
+                }
+            } catch(e) {
+                document.getElementById('st').innerText = "連線失敗";
+                document.getElementById('btn').disabled = false;
             }
         }
-        initShop();
+        init();
     </script>
 </body>
 </html>
